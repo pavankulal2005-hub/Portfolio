@@ -73,42 +73,119 @@
     /* App Performance Preloader */
     #loader {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #030712;
+      inset: 0;
       z-index: 9999;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      transition: opacity 5s ease, visibility 3s;
-    }
-    .loader-logo {
-      font-family: var(--font-heading);
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 16px;
-      letter-spacing: 10px;
-    }
-    .loader-logo span { color: var(--primary); }
-    .loader-bar {
-      width: 160px;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 15%, rgba(0, 255, 204, 0.18), transparent 22%), linear-gradient(135deg, #030712 0%, #060b18 65%);
+      color: #ffffff;
       overflow: hidden;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-frame {
+      width: 140px;
+      height: 140px;
       position: relative;
+      display: grid;
+      place-items: center;
+      margin-bottom: 22px;
+    }
+    .loader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      animation: ringRotate 3.6s linear infinite;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.08);
+    }
+    .loader-ring::before,
+    .loader-ring::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      box-shadow: 0 0 16px rgba(0, 255, 204, 0.35);
+    }
+    .loader-ring::before { top: 8px; left: 50%; transform: translateX(-50%); }
+    .loader-ring::after { right: 8px; top: 50%; transform: translateY(-50%); }
+    .loader-core {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 0 24px rgba(0, 255, 204, 0.08);
+    }
+    .loader-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      letter-spacing: 0.26em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .loader-title span { color: var(--primary); }
+    .loader-subtitle {
+      max-width: 320px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.6;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+    .loader-bar {
+      width: min(380px, 86vw);
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 14px;
     }
     .loader-progress {
       width: 0%;
       height: 100%;
       background: linear-gradient(90deg, var(--secondary), var(--primary));
-      animation: load 5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      animation: load 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
-    @keyframes load { to { width: 100%; } }
+    .loader-dots {
+      display: flex;
+      gap: 10px;
+    }
+    .loader-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(0, 255, 204, 0.82);
+      opacity: 0.28;
+      animation: dotBlink 2.1s infinite ease-in-out;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes ringRotate { to { transform: rotate(360deg); } }
+    @keyframes load { 0% { width: 5%; } 30% { width: 28%; } 70% { width: 82%; } 100% { width: 100%; } }
+    @keyframes dotBlink { 0%, 100% { opacity: 0.28; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-5px); } }
+
+    body:not(.page-ready) .header,
+    body:not(.page-ready) .hero,
+    body:not(.page-ready) footer {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    body.page-ready .header,
+    body.page-ready .hero,
+    body.page-ready footer {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* Performance Hardware Accelerated Elements */
     #bg-canvas {
@@ -831,32 +908,47 @@
     }
 
     @media (max-width: 768px) {
+      .header { top: 12px; }
+      .navbar {
+        padding: 14px 18px;
+        gap: 12px;
+      }
+      .logo { font-size: 1.05rem; }
+      .theme-toggle { width: 38px; height: 38px; }
       .menu-icon { display: flex; }
       .nav-links {
         position: fixed;
-        top: 80px;
-        left: 16px;
-        right: 16px;
-        background: var(--bg-surface);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--border-color);
+        top: 76px;
+        left: 14px;
+        right: 14px;
+        background: rgba(3, 7, 18, 0.95);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         flex-direction: column;
-        padding: 30px;
-        border-radius: 16px;
-        gap: 20px;
+        padding: 24px;
+        border-radius: 18px;
+        gap: 18px;
         text-align: center;
         opacity: 0;
         visibility: hidden;
         transform: translate3d(0, -10px, 0);
         transition: var(--transition);
-        box-shadow: 0 16px 32px rgba(0,0,0,0.3);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
       }
+      .nav-links a { font-size: 1rem; }
       .nav-links.active {
         opacity: 1;
         visibility: visible;
         transform: translate3d(0, 0, 0);
       }
+      .hero { padding-top: 92px; }
+      .hero-right { padding: 0 10px; }
+      .about-content, .contact-form-panel, .stat-card, .skill-card, .project-card, .certificate-card { padding: 20px; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+      .footer-links { flex-wrap: wrap; gap: 12px; }
+      .back-to-top { right: 16px; bottom: 16px; }
+      .cursor-glow { display: none !important; }
     }
   </style>
 </head>
@@ -864,8 +956,14 @@
 
   <!-- Loading Animation State Container -->
   <div id="loader">
-    <div class="loader-logo">PAVAN<span>.</span></div>
+    <div class="loader-frame">
+      <div class="loader-ring"></div>
+      <div class="loader-core"></div>
+    </div>
+    <div class="loader-title">PAVAN<span>.</span></div>
+    <div class="loader-subtitle">Loading... your responsive portfolio website   Please wait...</div>
     <div class="loader-bar"><div class="loader-progress"></div></div>
+    <div class="loader-dots"><span></span><span></span><span></span></div>
   </div>
 
   <!-- Realtime Adaptive Interaction Matrix Background -->
@@ -1136,22 +1234,24 @@ I am a passionate Computer Science student with a strong interest in web develop
   <h2 class="section-title">Certifications</h2>
   <div class="cert-grid">
     
-    <!-- Certificate 1: Data Analytics -->
-     <a class="certificate-card" href="powerbi.pdf" target="_blank" rel="noopener noreferrer">
+    <!-- Certificate 1: Power BI -->
+    <a class="certificate-card" href="powerbi.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="powerbi.png" alt="Python Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&width=400&auto=format&fit=crop'">
-        <div class="cert-badge"><i class="fab fa-python"></i></div>
+        <img src="powerbi.png" alt="Power BI Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&width=400&auto=format&fit=crop'">
+        <div class="cert-badge"><i class="fas fa-chart-bar"></i></div>
       </div>
       <div class="cert-body">
-        <h3>Power BI for Biginners</h3>
+        <h3>Power BI for Beginners</h3>
         <p class="issuer">Simplilearn — 2026</p>
         <span class="cert-footer-link">Verify <i class="fas fa-external-link-alt"></i></span>
       </div>
     </a>
-    <a class="certificate-card" href="Introduction to Data Analytics [Simplilearn ].pdf" target="_blank" rel="noopener noreferrer">
+
+    <!-- Certificate 2: Data Analytics -->
+    <a class="certificate-card" href="Introduction%20to%20Data%20Analytics%20%5BSimplilearn%20%5D.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="simpli learn.png" alt="Data Analytics" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&width=400&auto=format&fit=crop'">
-        <div class="cert-badge"><i class="fas fa-user-graduate"></i></div>
+        <img src="simpli%20learn.png" alt="Data Analytics Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&width=400&auto=format&fit=crop'">
+        <div class="cert-badge"><i class="fas fa-chart-pie"></i></div>
       </div>
       <div class="cert-body">
         <h3>Introduction to Data Analytics</h3>
@@ -1160,24 +1260,24 @@ I am a passionate Computer Science student with a strong interest in web develop
       </div>
     </a>
 
-    <!-- Certificate 2: HTML5 -->
-    <a class="certificate-card" href="html 5.pdf" target="_blank" rel="noopener noreferrer">
+    <!-- Certificate 3: HTML5 -->
+    <a class="certificate-card" href="html%205.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="html 5 jpg.png" alt="HTML5 Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621839673705-6607ae1b4795?q=80&width=400&auto=format&fit=crop'">
-        <div class="cert-badge"><i class="fas fa-code"></i></div>
+        <img src="html%205%20jpg.png" alt="HTML5 Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1621839673705-6607ae1b4795?q=80&width=400&auto=format&fit=crop'">
+        <div class="cert-badge"><i class="fab fa-html5"></i></div>
       </div>
       <div class="cert-body">
-        <h3>HTML5 </h3>
+        <h3>HTML5</h3>
         <p class="issuer">Infosys Springboard — 2025</p>
         <span class="cert-footer-link">Verify <i class="fas fa-external-link-alt"></i></span>
       </div>
     </a>
 
-    <!-- Certificate 3: Placeholder (e.g., CSS3) -->
+    <!-- Certificate 4: MS Excel -->
     <a class="certificate-card" href="Excel.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="excel.png" alt="CSS3 Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&width=400&auto=format&fit=crop'">
-        <div class="cert-badge"><i class="fas fa-paint-brush"></i></div>
+        <img src="excel.png" alt="MS Excel Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&width=400&auto=format&fit=crop'">
+        <div class="cert-badge"><i class="fas fa-file-excel"></i></div>
       </div>
       <div class="cert-body">
         <h3>MS Excel</h3>
@@ -1186,24 +1286,24 @@ I am a passionate Computer Science student with a strong interest in web develop
       </div>
     </a>
 
-    <!-- Certificate 4: Placeholder (e.g., JavaScript) -->
-    <a class="certificate-card" href="Website Design & Development.pdf" target="_blank" rel="noopener noreferrer">
+    <!-- Certificate 5: Website Design & Development -->
+    <a class="certificate-card" href="Website%20Design%20%26%20Development.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="website design and development img.png" alt="JavaScript Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?q=80&width=400&auto=format&fit=crop'">
+        <img src="website%20design%20and%20development%20img.png" alt="Website Design and Development Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?q=80&width=400&auto=format&fit=crop'">
         <div class="cert-badge"><i class="fas fa-laptop-code"></i></div>
       </div>
       <div class="cert-body">
         <h3>Website Design and Development</h3>
-        <p class="issuer">Infosys Springboard— 2025</p>
+        <p class="issuer">Infosys Springboard — 2025</p>
         <span class="cert-footer-link">Verify <i class="fas fa-external-link-alt"></i></span>
       </div>
     </a>
 
-    <!-- Certificate 5: Placeholder (e.g., Python) -->
+    <!-- Certificate 6: Cyber Security -->
     <a class="certificate-card" href="udemy.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="udemy.png" alt="Python Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&width=400&auto=format&fit=crop'">
-        <div class="cert-badge"><i class="fab fa-python"></i></div>
+        <img src="udemy.png" alt="Cyber Security Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&width=400&auto=format&fit=crop'">
+        <div class="cert-badge"><i class="fas fa-shield-alt"></i></div>
       </div>
       <div class="cert-body">
         <h3>Cyber Security</h3>
@@ -1212,14 +1312,14 @@ I am a passionate Computer Science student with a strong interest in web develop
       </div>
     </a>
 
-    <!-- Certificate 6: Placeholder (e.g., SQL) -->
-    <a class="certificate-card" href="Exploring Computers.pdf" target="_blank" rel="noopener noreferrer">
+    <!-- Certificate 7: Exploring Computers -->
+    <a class="certificate-card" href="Exploring%20Computers.pdf" target="_blank" rel="noopener noreferrer">
       <div class="cert-thumb">
-        <img src="exploring computer img.png" alt="SQL Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&width=400&auto=format&fit=crop'">
-        <div class="cert-badge"><i class="fas fa-database"></i></div>
+        <img src="exploring%20computer%20img.png" alt="Exploring Computers Certificate" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&width=400&auto=format&fit=crop'">
+        <div class="cert-badge"><i class="fas fa-desktop"></i></div>
       </div>
       <div class="cert-body">
-        <h3>Explore computer</h3>
+        <h3>Exploring Computers</h3>
         <p class="issuer">Infosys Springboard — 2025</p>
         <span class="cert-footer-link">Verify <i class="fas fa-external-link-alt"></i></span>
       </div>
@@ -1314,14 +1414,28 @@ I am a passionate Computer Science student with a strong interest in web develop
     const ctx = canvas.getContext('2d');
 
     // System Preloader Handlers
+    const loader = document.getElementById('loader');
+    const loaderStart = performance.now();
+    const minLoaderDuration = 2600;
+
+    const revealPage = () => {
+      document.body.classList.add('page-ready');
+    };
+
     window.addEventListener('load', () => {
-      document.getElementById('loader').style.opacity = '0';
+      const elapsed = performance.now() - loaderStart;
+      const delay = Math.max(0, minLoaderDuration - elapsed);
+
       setTimeout(() => {
-        document.getElementById('loader').style.visibility = 'hidden';
-        document.querySelectorAll('.progress-bar-fill').forEach(bar => {
-          bar.style.width = bar.getAttribute('data-progress');
-        });
-      }, 400);
+        loader.classList.add('hidden');
+        setTimeout(() => {
+          loader.style.display = 'none';
+          revealPage();
+          document.querySelectorAll('.progress-bar-fill').forEach(bar => {
+            bar.style.width = bar.getAttribute('data-progress');
+          });
+        }, 850);
+      }, delay);
     });
 
     // Touch-Detection Optimization for Input Devices
